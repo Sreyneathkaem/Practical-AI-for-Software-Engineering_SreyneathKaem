@@ -12,7 +12,7 @@ DEFAULT_MAX_TOKENS = 500
 
 # The model name is intentionally a placeholder. Set it to whatever model
 # your course environment provides (e.g. via the OPENAI_MODEL env var).
-DEFAULT_MODEL = "YOUR_MODEL"
+DEFAULT_MODEL = "llama-3.3-70b-versatile"
 
 # ---- retry / backoff -----------------------------------------------------
 MAX_RETRIES = 3          # Step 8: never retry more than this many times

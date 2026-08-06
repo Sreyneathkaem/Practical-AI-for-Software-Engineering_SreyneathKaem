@@ -13,8 +13,11 @@ Type /help inside the session for interactive commands.
 
 from __future__ import annotations
 
+
 import argparse
+import json
 import sys
+from pathlib import Path
 
 import config
 from llm import LLMService, LLMError, ConfigurationError
@@ -61,6 +64,8 @@ Commands:
   /tokens <n>           change the maximum output tokens
   /usage                show total tokens used this session
   /clear                clear the conversation history
+  /save <file>          save the conversation to a JSON file
+  /load <file>          load a conversation from a JSON file
   /quit                 exit
 """
 
@@ -84,6 +89,50 @@ class Session:
         system_prompt = config.get_persona(self.persona_name)
         # The conversation is just data — a list of role/content messages.
         self.messages = [{"role": "system", "content": system_prompt}]
+
+    def save_messages(self, file_path: str) -> bool:
+        try:
+            with Path(file_path).open("w", encoding="utf-8") as handle:
+                json.dump(self.messages, handle, indent=2)
+        except OSError as exc:
+            print(f"Could not save conversation to {file_path}: {exc}")
+            return False
+
+        print(f"Conversation saved to {file_path}.")
+        return True
+
+    def load_messages(self, file_path: str) -> bool:
+        try:
+            with Path(file_path).open("r", encoding="utf-8") as handle:
+                payload = json.load(handle)
+        except FileNotFoundError:
+            print(f"Could not find conversation file: {file_path}")
+            return False
+        except json.JSONDecodeError:
+            print(f"Could not read conversation file: {file_path}")
+            return False
+        except OSError as exc:
+            print(f"Could not read conversation file: {file_path}: {exc}")
+            return False
+
+        if not isinstance(payload, list):
+            print("Conversation file is invalid. Expected a list of messages.")
+            return False
+
+        for item in payload:
+            if not isinstance(item, dict):
+                print("Conversation file is invalid. Each message must be a dict.")
+                return False
+            if "role" not in item or "content" not in item:
+                print("Conversation file is invalid. Each message must have role and content.")
+                return False
+            if not isinstance(item["role"], str) or not isinstance(item["content"], str):
+                print("Conversation file is invalid. Message role and content must be strings.")
+                return False
+
+        self.messages = payload
+        print(f"Conversation loaded from {file_path}.")
+        return True
 
     # ---- command handling -----------------------------------------------
     def handle_command(self, line: str) -> bool:
@@ -113,6 +162,16 @@ class Session:
         elif cmd == "/clear":
             self.reset_conversation()
             print("Conversation cleared.")
+        elif cmd == "/save":
+            if arg:
+                self.save_messages(arg)
+            else:
+                print("Usage: /save <file>")
+        elif cmd == "/load":
+            if arg:
+                self.load_messages(arg)
+            else:
+                print("Usage: /load <file>")
         else:
             print(f"Unknown command: {cmd}. Type /help.")
         return True
