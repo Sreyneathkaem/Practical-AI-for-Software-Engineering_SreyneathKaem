@@ -20,6 +20,9 @@ own data, and deploying AI systems in production.
 ├── week-01-foundations-of-applied-ai/
 │   ├── slides/                              # lecture deck
 │   └── session-1-lab/                       # hands-on coding lab (AskBot)
+├── week-02-working-with-the-openai-api/
+│   ├── slides/                              # lecture decks (Session 1 & 2)
+│   └── session-2-lab/                       # lab (Configurable Text Assistant)
 └── README.md
 ```
 

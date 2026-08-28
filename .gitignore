@@ -16,3 +16,6 @@ Thumbs.db
 
 # Build / temp
 *.tmp
+
+# Author build context (local only, not part of course materials)
+.context/
