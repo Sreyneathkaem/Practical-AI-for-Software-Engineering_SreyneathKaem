@@ -70,6 +70,14 @@ async def run(questions: list[str] | None):
         except (EOFError, KeyboardInterrupt):
             print("\nGoodbye!")
             break
+        except asyncio.CancelledError:
+            # Windows can occasionally deliver a stray cancellation left over
+            # from the previous question's MCP connection cleanup, right as
+            # we're idling at input(). It's harmless — clear it and keep going.
+            task = asyncio.current_task()
+            if task is not None:
+                task.uncancel()
+            continue
         question = question.strip()
         if not question:
             continue

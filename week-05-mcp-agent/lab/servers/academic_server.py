@@ -82,7 +82,7 @@ def search_policy(topic: str) -> dict:
 
 
 # ------------------------------------------------------------------
-# TOOL: get_schedule   <-- LAB PART 2 (TODO 1)
+# TOOL: get_schedule   <-- LAB PART 2 (TODO 1) -- DONE
 # ------------------------------------------------------------------
 @mcp.tool()
 def get_schedule(course_code: str) -> dict:
@@ -101,21 +101,18 @@ def get_schedule(course_code: str) -> dict:
     On an unknown code, return a dict with an "error" key, similar to
     search_course above.
     """
-    # ==============================================================
-    # TODO 1  (Lab Part 2 — ~10 minutes)
-    # Implement this tool using the SCHEDULES dictionary imported above.
-    #
-    # Steps:
-    #   1. Normalize the incoming course_code with normalize_code(...).
-    #   2. Look it up in SCHEDULES.
-    #   3. If not found, return {"error": "...", "available_courses": [...]}.
-    #   4. If found, return the success dict shown in the docstring.
-    #
-    # Tip: look at how search_course() above does the same pattern.
-    # ==============================================================
+    code = normalize_code(course_code)
+    schedule = SCHEDULES.get(code)
+    if schedule is None:
+        return {
+            "error": f"Course '{course_code}' was not found.",
+            "available_courses": sorted(SCHEDULES.keys()),
+        }
     return {
-        "error": "get_schedule is not implemented yet.",
-        "hint": "Complete TODO 1 in servers/academic_server.py (Lab Part 2).",
+        "course_code": code,
+        "day": schedule["day"],
+        "time": schedule["time"],
+        "room": schedule["room"],
     }
 
 
@@ -133,6 +130,7 @@ def get_schedule(course_code: str) -> dict:
 #
 # Until you add the decorator, this is just a plain Python function and the
 # MCP server will NOT expose it as a tool.
+@mcp.tool()
 def check_prerequisite(course_code: str) -> dict:
     """Return the prerequisite for a course code (may be None)."""
     code = normalize_code(course_code)

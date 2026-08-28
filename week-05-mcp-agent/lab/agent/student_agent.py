@@ -106,26 +106,15 @@ class MCPClient:
     async def connect_all(self):
         """Connect to every MCP server and discover its tools.
 
-        ----------------------------------------------------------------
-        TODO 3  (Lab Challenge 2 — error handling)
-        As written, if a server is DOWN, `_connect_one` raises and the raw
-        error travels all the way back to the user (a stack trace).
-
-        Fix: wrap the connection attempt below in try/except so that one
-        unavailable server does not crash the whole assistant. On failure,
-        record the server name in `self.unavailable` and CONTINUE, so the
-        servers that ARE up still work.
-
-            for name, url in self._targets():
-                try:
-                    await self._connect_one(name, url)
-                except Exception as exc:
-                    self.unavailable.append(name)
-                    print(f"  [warning] '{name}' MCP server unavailable: {exc}")
-        ----------------------------------------------------------------
+        A server that is unreachable is recorded in `self.unavailable`
+        instead of crashing the whole assistant; other servers still work.
         """
         for name, url in self._targets():
-            await self._connect_one(name, url)
+            try:
+                await self._connect_one(name, url)
+            except Exception as exc:
+                self.unavailable.append(name)
+                print(f"  [warning] '{name}' MCP server unavailable: {exc}")
 
     async def _connect_one(self, name: str, url: str):
         # First, a quick reachability check. If the server is not accepting
