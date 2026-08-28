@@ -1,0 +1,5 @@
+# Pinned to the MCP 1.x line this lab was written and tested against.
+# (MCP 2.x renamed parts of the client API.)
+mcp>=1.10,<2.0
+openai>=1.0
+python-dotenv>=1.0

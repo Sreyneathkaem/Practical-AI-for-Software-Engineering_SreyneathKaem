@@ -1,6 +1,7 @@
 # Secrets — never commit
 .env
 *.key
+*.md
 
 # Python
 venv/
@@ -19,3 +20,6 @@ Thumbs.db
 
 # Author build context (local only, not part of course materials)
 .context/
+archive
+
+CLAUDE.md
